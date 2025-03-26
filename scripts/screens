@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Detectar si Hyprland está en ejecución
+if pgrep -x "Hyprland" > /dev/null; then
+    hyprctl keyword monitor "eDP-1,1920x1080@60,0x0,1"
+    hyprctl keyword monitor "HDMI-A-1,1440x900@60,-1440x0,1"
+else
+    # Comandos para Xorg (X11)
+    xrandr --newmode "1440x900_60.00" 106.50 1440 1520 1672 1904 900 903 909 934 -hsync +vsync
+    xrandr --addmode HDMI-1 1440x900_60.00
+    xrandr --output eDP-1 --primary --mode 1920x1080 --pos 1440x0
+    xrandr --output HDMI-1 --mode 1440x900_60.00 --pos 0x0
+fi
+

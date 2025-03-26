@@ -1,0 +1,98 @@
+#!/bin/bash
+
+# Ruta predeterminada
+BASE_PATH="/home/asaada10/Wallpaper"
+
+if [ -z "$1" ]; then
+    echo "Uso: $0 <random/video> [subcarpeta/ruta] <pantallas (0,1,2)> [audio] [nombre_parcial]"
+    exit 1
+fi
+
+# Variables
+VIDEO_PATH="$1"
+SUBCARPETA="${2:-}"  # Si no se pasa carpeta, se usa la carpeta base
+CARPETA="$SUBCARPETA"  # Ruta completa o subcarpeta
+PANTALLAS="${3:-1}"  # Número de pantallas (0: ambas, 1: SCREEN1, 2: SCREEN2)
+AUDIO_OPTION="${4:-}"  # Opción de audio, si se especifica
+NOMBRE_PARCIAL="${5:-}"  # Nombre parcial del archivo, si se proporciona
+
+# Configurar opciones de audio para mpvpaper
+if [ "$AUDIO_OPTION" = "audio" ]; then
+    MPV_OPTIONS="loop"
+else
+    MPV_OPTIONS="no-audio loop"
+    NOMBRE_PARCIAL="$4"  # Ajuste si no hay audio
+fi
+
+# Si el primer argumento es 'random', selecciona un video aleatorio
+if [ "$VIDEO_PATH" = "random" ]; then
+    if [ -n "$SUBCARPETA" ] && [ ! -d "$SUBCARPETA" ]; then
+        CARPETA="$BASE_PATH/$SUBCARPETA"
+    else
+        CARPETA="$SUBCARPETA"
+    fi
+
+    if [ ! -d "$CARPETA" ]; then
+        echo "La carpeta especificada no existe: $CARPETA"
+        exit 1
+    fi
+
+    # Filtrar archivos de video
+    if [ -n "$NOMBRE_PARCIAL" ]; then
+        VIDEO_FILES=($(find "$CARPETA" -type f \( -name "*$NOMBRE_PARCIAL*.mp4" -o -name "*$NOMBRE_PARCIAL*.mkv" -o -name "*$NOMBRE_PARCIAL*.webm" \)))
+    else
+        VIDEO_FILES=($(find "$CARPETA" -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \)))
+    fi
+
+    if [ ${#VIDEO_FILES[@]} -eq 0 ]; then
+        echo "No se encontró ningún video en la carpeta $CARPETA"
+        exit 1
+    fi
+
+    # Seleccionar videos aleatorios
+    RANDOM_VIDEO1="${VIDEO_FILES[RANDOM % ${#VIDEO_FILES[@]}]}"
+    RANDOM_VIDEO2="$RANDOM_VIDEO1"
+
+    # Asegurar que los videos sean distintos si hay más de uno disponible
+    if [ "$PANTALLAS" -eq 0 ] && [ ${#VIDEO_FILES[@]} -gt 1 ]; then
+        while [ "$RANDOM_VIDEO2" == "$RANDOM_VIDEO1" ]; do
+            RANDOM_VIDEO2="${VIDEO_FILES[RANDOM % ${#VIDEO_FILES[@]}]}"
+        done
+    fi
+
+    VIDEO_PATH="$RANDOM_VIDEO1"
+fi
+
+echo "Usando video en pantalla 1: $RANDOM_VIDEO1"
+
+# Detener cualquier instancia anterior de mpvpaper
+pkill mpvpaper
+
+# Definir las pantallas
+SCREEN1="eDP-1"
+SCREEN2="HDMI-A-1"
+
+# Aplicar video según la opción seleccionada
+case "$PANTALLAS" in
+    1)
+        echo "Aplicando video en $SCREEN1"
+        mpvpaper "$SCREEN1" -f -o "$MPV_OPTIONS" "$RANDOM_VIDEO1" &
+        ;;
+    2)
+        echo "Aplicando video en $SCREEN2"
+        mpvpaper "$SCREEN2" -f -o "$MPV_OPTIONS" "$RANDOM_VIDEO1" &
+        ;;
+    0)
+        echo "Aplicando video en $SCREEN1 y $SCREEN2"
+        echo "Usando video en pantalla 2: $RANDOM_VIDEO2"
+        mpvpaper "$SCREEN1" -f -o "$MPV_OPTIONS" "$RANDOM_VIDEO1" &
+        mpvpaper "$SCREEN2" -f -o "$MPV_OPTIONS" "$RANDOM_VIDEO2" &
+        ;;
+    *)
+        echo "Opción de pantalla inválida. Usa 0 para ambas, 1 para SCREEN1 o 2 para SCREEN2."
+        exit 1
+        ;;
+esac
+
+echo "Fondo de pantalla cambiado correctamente."
+
