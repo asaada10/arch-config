@@ -16,18 +16,18 @@ fi
 
 # Lista de paquetes a instalar
 PACKAGES=(
-    7zip alacritty android-file-transfer android-studio android-tools anydesk-bin
-    aquamarine arc-gtk-theme aria2 baobab base base-devel bind blender bluetui
+    7zip alacritty android-file-transfer android-tools anydesk-bin
+    aquamarine arc-gtk-theme aria2 baobab base base-devel bind bluetui
     bluez bluez-utils brave-bin brightnessctl btop cbatticon cliphist composer
     cronie debugedit dosfstools dunst efibootmgr evtest fakeroot firefox flameshot
-    flatpak fuse2 gimp git google-chrome gparted grub grub-customizer gsfonts
+    flatpak fuse2 git google-chrome gparted grub grub-customizer gsfonts
     gst-libav gst-plugins-good gvfs-mtp htop hyprcursor hyprgraphics hyprland
     hyprland-qtutils hyprlang hyprlock hyprshot imwheel inetutils jmtpfs jq
-    kitty konsole lib32-vulkan-intel libratbag libva-nvidia-driver links linux
+    kitty konsole lib32-vulkan-intel libratbag links linux
     linux-discord-rich-presence linux-firmware linux-lts-headers lutris make
     mariadb miru-bin mission-center mpv mpvpaper mtools mtpfs mysql-workbench
     nano neofetch neovim networkmanager nitrogen nodejs noto-fonts noto-fonts-cjk
-    noto-fonts-emoji npm ntfs-3g nvidia nvidia-settings nvidia-utils obs-studio
+    noto-fonts-emoji npm ntfs-3g
     pacman-contrib pavucontrol php php-apache piper pipewire-alsa pipewire-jack
     pipewire-pulse pkgconf postgresql pulseaudio-alsa pv python-psutil
     qt5-graphicaleffects qt5-quickcontrols qtile rofi-lbonn-wayland-git rsync
